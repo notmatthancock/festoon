@@ -47,7 +47,7 @@
   
   
   
-    <title>festoon (docs) &#8212; festoon  documentation</title>
+    <title>festoon &#8212; festoon  documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/material.css" />
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
@@ -92,7 +92,7 @@
       <div class="md-flex__cell md-flex__cell--stretch">
         <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
           <span class="md-header-nav__topic">festoon  documentation</span>
-          <span class="md-header-nav__topic"> festoon (docs) </span>
+          <span class="md-header-nav__topic"> festoon </span>
         </div>
       </div>
       <div class="md-flex__cell md-flex__cell--shrink">
@@ -213,7 +213,7 @@
 <nav class="md-nav md-nav--secondary">
     <label class="md-nav__title" for="__toc">Contents</label>
   <ul class="md-nav__list" data-md-scrollfix="">
-        <li class="md-nav__item"><a href="#index--page-root" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">festoon</span></code> (docs)</a>
+        <li class="md-nav__item"><a href="#index--page-root" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">festoon</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#logit" class="md-nav__link">logit</a>
         </li>
@@ -239,15 +239,54 @@
         <div class="md-content">
           <article class="md-content__inner md-typeset" role="main">
             
-  <section id="festoon-docs">
-<h1 id="index--page-root"><code class="docutils literal notranslate"><span class="pre">festoon</span></code> (<a class="reference external" href="#index--page-root">docs</a>)<a class="headerlink" href="#index--page-root" title="Permalink to this headline">¶</a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">festoon</span></code> is a collection of useful Python decorators for common tasks, e.g.,</p>
-<ul class="simple">
-<li><p>Logging when a function was called and returned</p></li>
-<li><p>Logging the runtime of a function</p></li>
-<li><p>Automatically substituting environment variables for arguments</p></li>
-<li><p>Injecting variables into docstrings</p></li>
-</ul>
+  <section id="festoon">
+<h1 id="index--page-root"><code class="docutils literal notranslate"><span class="pre">festoon</span></code><a class="headerlink" href="#index--page-root" title="Permalink to this headline">¶</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">festoon</span></code> (<a class="reference external" href="https://notmatthancock.github.io/festoon/">read the full docs here</a>) is a collection of useful Python decorators for common tasks.</p>
+<p>Here’s a concrete logging example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">festoon</span> <span class="kn">import</span> <span class="n">logit</span>
+
+<span class="nd">@logit</span>
+<span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">x</span><span class="o">+</span><span class="n">y</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">logging</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">basicConfg</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+    <span class="n">func</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="c1"># INFO.__main__: CALL func(x=1, y=2)</span>
+    <span class="c1"># INFO.__main__: DONE func-&gt;3</span>
+</pre></div>
+</div>
+<p>And here is example to inject variables into a docstring:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">festoon</span> <span class="kn">import</span> <span class="n">docfill</span>
+
+<span class="n">LOW</span> <span class="o">=</span> <span class="mf">0.5</span>
+<span class="n">HIGH</span> <span class="o">=</span> <span class="mf">0.75</span>
+<span class="n">ANIMAL_CHOICES</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"dog"</span><span class="p">,</span> <span class="s2">"cat"</span><span class="p">,</span> <span class="s2">"ostrich"</span><span class="p">)</span>
+
+<span class="nd">@docfill</span><span class="p">(</span><span class="n">LOW</span><span class="p">,</span> <span class="n">HIGH</span><span class="p">,</span> <span class="n">animals</span><span class="o">=</span><span class="n">ANIMAL_CHOICES</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">threshold</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">animal</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="sd">"""Do a thing</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        threshold: a value between {0:.2f} and {1:.2f}</span>
+<span class="sd">        animal: valid options are {animals}</span>
+<span class="sd">    """</span>
+    <span class="o">...</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
+    <span class="n">help</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+    <span class="c1"># Help on function func in module __main__:</span>
+    <span class="c1">#</span>
+    <span class="c1"># func(threshold: float, animal: str)</span>
+    <span class="c1">#     Do a thing</span>
+    <span class="c1">#</span>
+    <span class="c1">#     Args:</span>
+    <span class="c1">#         threshold: a value between 0.50 and 0.75</span>
+    <span class="c1">#         animal: valid options are ('dog', 'cat', 'ostrich')</span>
+</pre></div>
+</div>
 <span class="target" id="module-festoon"></span></section>
 <section id="logit">
 <h1 id="logit">logit<a class="headerlink" href="#logit" title="Permalink to this headline">¶</a></h1>

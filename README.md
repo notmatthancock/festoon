@@ -1,9 +1,52 @@
-# `festoon` ([docs](https://notmatthancock.github.io/festoon/))
+# `festoon`
 
-`festoon` is a collection of useful Python decorators for common tasks, e.g.,
+`festoon` ([read the full docs here](https://notmatthancock.github.io/festoon/)) is a collection of useful Python decorators for common tasks.
 
-- Logging when a function was called and returned
-- Logging the runtime of a function
-- Automatically substituting environment variables for arguments
-- Injecting variables into docstrings
+Here's a concrete logging example:
 
+```python
+from festoon import logit
+
+@logit
+def func(x, y=2):
+    return x+y
+
+if __name__ == "__main__":
+    import logging
+    logging.basicConfg(level=logging.INFO)
+    func(1)
+    # INFO.__main__: CALL func(x=1, y=2)
+    # INFO.__main__: DONE func->3
+```
+
+And here is example to inject variables into a docstring:
+
+```python
+from festoon import docfill
+
+LOW = 0.5
+HIGH = 0.75
+ANIMAL_CHOICES = ("dog", "cat", "ostrich")
+
+@docfill(LOW, HIGH, animals=ANIMAL_CHOICES)
+def func(threshold: float, animal: str):
+    """Do a thing
+
+    Args:
+        threshold: a value between {0:.2f} and {1:.2f}
+        animal: valid options are {animals}
+    """
+    ...
+
+
+if __name__ == "__main__":
+    help(func)
+    # Help on function func in module __main__:
+    # 
+    # func(threshold: float, animal: str)
+    #     Do a thing
+    # 
+    #     Args:
+    #         threshold: a value between 0.50 and 0.75
+    #         animal: valid options are ('dog', 'cat', 'ostrich')
+```
