@@ -1,0 +1,9 @@
+=============
+API Reference
+=============
+
+.. automodule:: more_functools
+
+.. autofunction:: logs
+.. autofunction:: fromenv
+
