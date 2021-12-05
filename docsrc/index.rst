@@ -1,12 +1,4 @@
-festoon
--------
-
-:code:`festoon` is a collection of Python decorators for common tasks. This includes things like:
-
-- logging when a function was called and return (optionally logging the arguments and return value)
-- logging the runtime of a function
-- automatically substituting environment variables for arguments
-- adding variables to docstrings
+.. mdinclude:: ../README.md
 
 .. automodule:: festoon 
 
