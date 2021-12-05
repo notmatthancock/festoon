@@ -2,7 +2,7 @@
 
 Festoon is a collection of useful Python decorators for common tasks:
 
-:code:`festoon` is a collection of useful Python decorators for common tasks, e.g.,
+`festoon` is a collection of useful Python decorators for common tasks, e.g.,
 
 - Logging when a function was called and returned
 - Logging the runtime of a function
