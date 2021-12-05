@@ -1,4 +1,4 @@
-# [festoon](https://notmatthancock.github.io/festoon/)
+# `festoon` ([docs](https://notmatthancock.github.io/festoon/))
 
 `festoon` is a collection of useful Python decorators for common tasks, e.g.,
 
