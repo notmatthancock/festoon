@@ -1,7 +1,5 @@
 # [festoon](https://notmatthancock.github.io/festoon/)
 
-Festoon is a collection of useful Python decorators for common tasks:
-
 `festoon` is a collection of useful Python decorators for common tasks, e.g.,
 
 - Logging when a function was called and returned
