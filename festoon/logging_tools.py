@@ -24,6 +24,23 @@ def format_call(fn: Callable, args: tuple, kwargs: dict) -> str:
     sentinel = object()
     kwarg_items = [_KwargItem(k, v) for k, v in kwargs.items()]
     result = []
+
+    named_positionals = [
+        ...
+    ]
+
+    for i, arg in enumerate(args):
+        pass
+
+
+    param_items = []
+    for (name, param) in params.items():
+        param: inspect.Parameter
+        if param.kind is param.VAR_POSITIONAL:
+            param_items.extend([(None, ...)])
+        elif param.kind is None: ## TODO FIX
+            pass
+
     for (name, param), input_item in itertools.zip_longest(
         params.items(),
         [*args, *kwarg_items],
@@ -37,7 +54,12 @@ def format_call(fn: Callable, args: tuple, kwargs: dict) -> str:
             value = input_item.value
         else:
             value = input_item
-        result.append(f"{name}={value}")
+
+        if name is None:
+            result.append(f"{value}")
+        else:
+            result.append(f"{name}={value}")
+
     paramstr = ", ".join(result)
     return f"CALL {_fn_name(fn)}({paramstr})"
 
@@ -86,9 +108,6 @@ def logit(
     fmtdone: Optional[FMTDONE_TYPE] = format_done,
 ):
     """Log a function on call, exception, and return
-
-    Note:
-        This is not a mathematical logit function :)
 
     Args:
         fn: function to be decorated

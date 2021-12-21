@@ -1,7 +1,39 @@
 import unittest
 from unittest import mock
 
-from festoon.logging_tools import logit, timeit
+from festoon.logging_tools import format_call, logit, timeit
+
+
+def func1(x, y, z=3):
+    pass
+
+
+def func2(*args):
+    pass
+
+
+class TestDefaultFormatCall(unittest.TestCase):
+    def test_func1_all_args(self):
+        args = (1, 2, 3)
+        kwargs = {}
+        message = format_call(func1, args, kwargs)
+        self.assertEqual("CALL func1(x=1, y=2, z=3)", message)
+
+    def test_func1_all_kwargs(self):
+        args = tuple()
+        kwargs = {"x": 1, "y": 2, "z": 3}
+        message = format_call(func1, args, kwargs)
+        self.assertEqual("CALL func1(x=1, y=2, z=3)", message)
+
+    def test_func1_mix_args_kwargs(self):
+        args = (1, 2)
+        kwargs = {"z": 3}
+        message = format_call(func1, args, kwargs)
+        self.assertEqual("CALL func1(x=1, y=2, z=3)", message)
+
+    def test_func2(self):
+        message = format_call(func2, (1, 2, 3), {})
+        self.assertEqual("CALL func2(1, 2, 3)", message)
 
 
 class TestLogit(unittest.TestCase):

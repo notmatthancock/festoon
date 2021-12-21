@@ -2,6 +2,10 @@
 
 .. automodule:: festoon 
 
+retry
+=====
+.. autofunction:: retry
+
 logit
 =====
 .. autofunction:: logit

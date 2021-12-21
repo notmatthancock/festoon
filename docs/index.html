@@ -215,6 +215,8 @@
   <ul class="md-nav__list" data-md-scrollfix="">
         <li class="md-nav__item"><a href="#index--page-root" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">festoon</span></code></a>
         </li>
+        <li class="md-nav__item"><a href="#retry" class="md-nav__link">retry</a>
+        </li>
         <li class="md-nav__item"><a href="#logit" class="md-nav__link">logit</a>
         </li>
         <li class="md-nav__item"><a href="#timeit" class="md-nav__link">timeit</a>
@@ -242,22 +244,31 @@
   <section id="festoon">
 <h1 id="index--page-root"><code class="docutils literal notranslate"><span class="pre">festoon</span></code><a class="headerlink" href="#index--page-root" title="Permalink to this headline">¶</a></h1>
 <p><code class="docutils literal notranslate"><span class="pre">festoon</span></code> (<a class="reference external" href="https://notmatthancock.github.io/festoon/">read the full docs here</a>) is a collection of useful Python decorators for common tasks.</p>
+<p>Here’s an example that retries a function on failures:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">festoon</span> <span class="kn">import</span> <span class="n">retry</span>
+
+<span class="nd">@retry</span><span class="p">(</span><span class="n">schedule</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">32</span><span class="p">],</span> <span class="n">catch</span><span class="o">=</span><span class="ne">ConnectionError</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">flaky_function</span><span class="p">():</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
 <p>Here’s a concrete logging example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">festoon</span> <span class="kn">import</span> <span class="n">logit</span>
 
 <span class="nd">@logit</span>
-<span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="s2">"something else"</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">x</span><span class="o">+</span><span class="n">y</span>
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">logging</span>
     <span class="n">logging</span><span class="o">.</span><span class="n">basicConfg</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
     <span class="n">func</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-    <span class="c1"># INFO.__main__: CALL func(x=1, y=2)</span>
+    <span class="c1"># INFO.__main__: CALL func(x=1, y=2, z="something else")</span>
     <span class="c1"># INFO.__main__: DONE func-&gt;3</span>
 </pre></div>
 </div>
-<p>And here is example to inject variables into a docstring:</p>
+<p>Notice that implicit default parameters are logged when using the default call formatter function.</p>
+<p>Here is example to inject variables into a docstring:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">festoon</span> <span class="kn">import</span> <span class="n">docfill</span>
 
 <span class="n">LOW</span> <span class="o">=</span> <span class="mf">0.5</span>
@@ -288,16 +299,56 @@
 </pre></div>
 </div>
 <span class="target" id="module-festoon"></span></section>
+<section id="retry">
+<h1 id="retry">retry<a class="headerlink" href="#retry" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="festoon.retry">
+<span class="sig-prename descclassname"><span class="pre">festoon.</span></span><span class="sig-name descname"><span class="pre">retry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">fn:</span> <span class="pre">Optional[Callable]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">*,</span> <span class="pre">schedule:</span> <span class="pre">Optional[List[int]]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">catch:</span> <span class="pre">Union[Type[Exception],</span> <span class="pre">List[Type[Exception]]]</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'Exception'&gt;,</span> <span class="pre">log_exceptions:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#festoon.retry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Repeatedly retry a function on exception after sleeping</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fn</strong> – callable being decorated</p></li>
+<li><p><strong>schedule</strong> – sequence of delay times to sleep in between call attempts</p></li>
+<li><p><strong>catch</strong> – Exception class or list of Exception classes that are caught
+when invoking the decoratee.</p></li>
+<li><p><strong>log_exceptions</strong> – If True, then logging.exception is called whenever
+an error is caught.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nd">@retry</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">func</span><span class="p">():</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="k">global</span> <span class="n">count</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="k">if</span> <span class="n">count</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="k">return</span> <span class="s2">"SUCCESS!"</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="k">else</span><span class="p">:</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="k">raise</span> <span class="ne">Exception</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">func</span><span class="p">())</span>
+<span class="go"># ERROR:__main__:</span>
+<span class="go"># Traceback (most recent call last):</span>
+<span class="go"># ...</span>
+<span class="go"># INFO:__main__:Sleeping for 1 seconds and then retrying...</span>
+<span class="go"># ERROR:__main__:</span>
+<span class="go"># Traceback (most recent call last):</span>
+<span class="go"># ...</span>
+<span class="go"># INFO:__main__:Sleeping for 2 seconds and then retrying...</span>
+<span class="go"># SUCCESS!</span>
+</pre></div>
+</div>
+</dd></dl>
+</section>
 <section id="logit">
 <h1 id="logit">logit<a class="headerlink" href="#logit" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="festoon.logit">
 <span class="sig-prename descclassname"><span class="pre">festoon.</span></span><span class="sig-name descname"><span class="pre">logit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">fn:</span> <span class="pre">Optional[Callable]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">*,</span> <span class="pre">name:</span> <span class="pre">Optional[str]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">level:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">20,</span> <span class="pre">fmtcall:</span> <span class="pre">Optional[Callable[[Callable,</span> <span class="pre">tuple,</span> <span class="pre">dict],</span> <span class="pre">str]]</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">format_call&gt;,</span> <span class="pre">fmtexcp:</span> <span class="pre">Optional[Callable[[Callable,</span> <span class="pre">Exception],</span> <span class="pre">str]]</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">format_excp&gt;,</span> <span class="pre">fmtdone:</span> <span class="pre">Optional[Callable[[Callable,</span> <span class="pre">Any],</span> <span class="pre">str]]</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">format_done&gt;</span></em><span class="sig-paren">)</span><a class="headerlink" href="#festoon.logit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Log a function on call, exception, and return</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This is not a mathematical logit function :)</p>
-</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">

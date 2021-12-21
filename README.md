@@ -2,24 +2,36 @@
 
 `festoon` ([read the full docs here](https://notmatthancock.github.io/festoon/)) is a collection of useful Python decorators for common tasks.
 
+Here's an example that retries a function on failures:
+
+```python
+from festoon import retry
+
+@retry(schedule=[1, 2, 8, 32], catch=ConnectionError)
+def flaky_function():
+    ...
+```
+    
+
 Here's a concrete logging example:
 
 ```python
 from festoon import logit
 
 @logit
-def func(x, y=2):
+def func(x, y=2, z="something else"):
     return x+y
 
 if __name__ == "__main__":
     import logging
     logging.basicConfg(level=logging.INFO)
     func(1)
-    # INFO.__main__: CALL func(x=1, y=2)
+    # INFO.__main__: CALL func(x=1, y=2, z="something else")
     # INFO.__main__: DONE func->3
 ```
+Notice that implicit default parameters are logged when using the default call formatter function.
 
-And here is example to inject variables into a docstring:
+Here is an example to inject variables into a docstring:
 
 ```python
 from festoon import docfill
